@@ -6,34 +6,38 @@ segment of Mach-O files.  It generates declarations for the classes,
 categories and protocols.  This is the same information provided by
 using 'otool -ov', but presented as normal Objective-C declarations.
 
-The latest version and information is available at:
+This is the unstable fork from https://github.com/nygard/class-dump.
+
+The original version and information is available at:
 
     http://stevenygard.com/projects/class-dump
 
-The source code is also available from my Github repository at:
+Swift support
+-------------
 
-    https://github.com/nygard/class-dump
-    
-"Swift support"
-==========
+This version includes "Swift support" for class-dump. 
 
-I added "Swift support" for class-dump. 
-
-Now, this tool can dump Objective-C headers even the MachO file uses Swift and ObjC at the same time.
-Notice, only ObjC headers can be dumped! 
+Now, this tool can dump Objective-C headers even the Mach-O file uses Swift and Objective-C at the same time.
+Notice, only Objective-C headers can be dumped! 
 
 LAST, THIS IS AN EXPERIMENTAL VERSION. 
 
-我为class-dump添加了"Swift支持"。
+Install
+-------
 
-现在，这个工具可以dump出可执行文件的Objective-C头文件，即使那个MachO文件同时使用了Swift和ObjC。请注意只有ObjC类的头文件可以被dump出来！
+You can install class-dump via Homebrew.
 
-最后，这只是一个试验版本。
+    brew install manicmaniac/tap/class-dump
+
+Or you can build it manually.
+
+    xcodebuild build -project class-dump.xcodeproj -target class-dump -configuration Release
+    mv build/Release/class-dump /usr/local/bin/class-dump
 
 Usage
 -----
 
-    class-dump 3.5 (64 bit)
+    class-dump 3.5-0.1.0 (64 bit)
     Usage: class-dump [options] <mach-o-file>
 
       where options are:
@@ -70,6 +74,13 @@ Usage
 
     class-dump /Dev42/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/UIKit.framework -r --sdk-root /Dev42/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk
 
+Versioning rule
+---------------
+
+To distinguish this forked version from original one, I added version suffix after the original version string.
+This suffix itself follows semantic versioning.
+
+For example, `3.5-0.1.0` means the original version is `3.5` and I added minor changes to it (`0.1.0`).
 
 License
 -------
@@ -91,9 +102,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-Contact
--------
-
-You may contact the author by:
-   e-mail:  nygard at gmail.com
