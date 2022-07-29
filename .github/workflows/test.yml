@@ -1,0 +1,67 @@
+name: Test
+on:
+- push
+defaults:
+  run:
+    shell: bash
+jobs:
+  build:
+    runs-on: macOS-12
+    env:
+      DEVELOPER_DIR: "/Applications/Xcode_13.4.1.app/Contents/Developer"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build all
+      run: xcodebuild build -project class-dump.xcodeproj -target all -configuration Debug | xcpretty
+    - name: Build UnitTests
+      run: xcodebuild build -project class-dump.xcodeproj -target UnitTests -configuration Debug | xcpretty
+    - uses: actions/upload-artifact@v2
+      with:
+        path: build/Debug/*
+  unit-test:
+    needs: build
+    runs-on: macOS-12
+    env:
+      DEVELOPER_DIR: "/Applications/Xcode_13.4.1.app/Contents/Developer"
+    steps:
+    - uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: build/Debug
+    - name: Run UnitTests
+      run: xcrun xctest build/Debug/UnitTests.xctest
+  integration-test:
+    needs: build
+    runs-on: macOS-12
+    env:
+      DEVELOPER_DIR: "/Applications/Xcode_13.4.1.app/Contents/Developer"
+      OLD_CD: old/build/Debug/class-dump
+      NEW_CD: build/Debug/class-dump
+      ARCH_CD: build/Debug/class-dump
+      DIFF: diff -ru
+    steps:
+    - name: Install Homebrew dependencies
+      run: brew install openssl
+    - uses: actions/checkout@v3
+    - uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: build/Debug
+    - name: Recover permissions
+      run: chmod +x build/Debug/*
+    - uses: actions/cache@v3
+      id: cache-old-class-dump
+      with:
+        path: old/build/Debug
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ env.DEVELOPER_DIR }}-class-dump
+    - name: Checkout old class-dump
+      uses: actions/checkout@v3
+      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
+      with:
+        ref: '3.5'
+        path: old
+    - name: Build old class-dump
+      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
+      run: xcodebuild build -project old/class-dump.xcodeproj -target class-dump -configuration Debug OTHER_CFLAGS='-I/usr/local/opt/openssl@3/include -Wno-unknown-warning-option' OTHER_LDFLAGS=-L/usr/local/opt/openssl@3/lib DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=1 ARCHS=x86_64 | xcpretty
+    - name: Run Tests
+      run: python Tests/doTests.py

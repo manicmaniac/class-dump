@@ -48,14 +48,15 @@ TESTDIR_NEW = TESTDIR + "/new"
 TESTDIR_NEW_32 = TESTDIR + "/new32"
 TESTDIR_NEW_64 = TESTDIR + "/new64"
 
-OLD_CD = os.path.expanduser("~/Unix/bin/class-dump-3.5")
+OLD_CD = os.getenv('OLD_CD', os.path.expanduser("~/Unix/bin/class-dump-3.5"))
 #OLD_CD = os.path.expanduser("~/Unix/bin/class-dump-e9c13d1")
 #OLD_CD = "/bin/echo"
-NEW_CD = os.path.expanduser("/Local/nygard/Debug/class-dump")
+NEW_CD = os.getenv('NEW_CD', os.path.expanduser("/Local/nygard/Debug/class-dump"))
 
 # Must be a version that supports --list-arches
-ARCH_CD = os.path.expanduser("/Local/nygard/Debug/class-dump")
+ARCH_CD = os.getenv('ARCH_CD', os.path.expanduser("/Local/nygard/Debug/class-dump"))
 
+DIFF = os.getenv("DIFF", "ksdiff")
 
 try:
     developer_root = subprocess.check_output(shlex.split("xcode-select --print-path")).rstrip()
@@ -255,7 +256,7 @@ def main(argv):
             out.close
 
     print "Ended tests at", datetime.today().ctime()
-    Popen("ksdiff %s %s" % (TESTDIR_OLD, TESTDIR_NEW), shell=True)
+    Popen("%s %s %s" % (DIFF, TESTDIR_OLD, TESTDIR_NEW), shell=True)
 
 #----------------------------------------------------------------------
 #
