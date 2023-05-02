@@ -6,17 +6,23 @@ defaults:
     shell: bash
 jobs:
   test:
-    runs-on: macOS-12
+    runs-on: ${{ matrix.macos }}
     strategy:
       fail-fast: false
       matrix:
-        xcode-version:
-        - '14.2.0'
-        - '14.1.0'
-        - '14.0.1'
-        - '13.4.1'
+        include:
+        - macos: macOS-13
+          xcode: '14.3'
+        - macos: macOS-12
+          xcode: '14.2'
+        - macos: macOS-12
+          xcode: '14.1'
+        - macos: macOS-12
+          xcode: '14.0.1'
+        - macos: macOS-12
+          xcode: '13.4.1'
     env:
-      DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
+      DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer"
       OLD_CD: old/build/Debug/class-dump
       NEW_CD: build/Debug/class-dump
       ARCH_CD: build/Debug/class-dump
