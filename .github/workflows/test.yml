@@ -48,3 +48,9 @@ jobs:
       run: xcodebuild build -project old/class-dump.xcodeproj -target class-dump -configuration Debug OTHER_CFLAGS='-I/usr/local/opt/openssl@3/include -Wno-unknown-warning-option' OTHER_LDFLAGS=-L/usr/local/opt/openssl@3/lib DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=1 ARCHS=x86_64 | xcpretty
     - name: Run Tests
       run: python Tests/doTests.py
+  status-check:
+    runs-on: ubuntu-20.04
+    needs: test
+    if: failure()
+    steps:
+    - run: exit 1
