@@ -232,7 +232,7 @@ NSString *CDErrorKey_Exception    = @"CDErrorKey_Exception";
 
     CDMachOFile *machOFile = _machOFilesByName[adjustedName];
     if (machOFile == nil) {
-        CDFile *file = [CDFile fileWithContentsOfFile:adjustedName searchPathState:self.searchPathState];
+        CDFile *file = [CDFile fileWithContentsOfFile:adjustedName searchPathState:self.searchPathState error:NULL];
 
         if (file == nil || [self loadFile:file error:NULL] == NO)
             NSLog(@"Warning: Failed to load: %@", adjustedName);
