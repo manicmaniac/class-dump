@@ -127,9 +127,9 @@ static BOOL debug = NO;
         [self.resultString appendFormat:@"- (void)%@(%@)arg1;\n", method.name, [property.type formattedString:nil formatter:self.classDump.typeController.propertyTypeFormatter level:0]];
     } else if (property == nil) {
         //NSLog(@"No property for method: %@", method.name);
-        // C++ destructors can't be called and this header can't be compiled with one declared. So let's comment it out.
+        // C++ constructors and destructors can't be called and this header can't be compiled with one declared. So let's comment it out.
         // Leave it there so the user knows that the class has a C++ implementation though.
-        if ([method.name isEqualToString:@".cxx_destruct"]) {
+        if ([method.name isEqualToString:@".cxx_construct"] || [method.name isEqualToString:@".cxx_destruct"]) {
             [self.resultString appendString:@"// "];
         }
 
