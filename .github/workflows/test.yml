@@ -5,8 +5,43 @@ defaults:
   run:
     shell: bash
 jobs:
+  build-old-class-dump:
+    runs-on: macOS-12
+    env:
+      DEVELOPER_DIR: '/Applications/Xcode_13.4.1.app/Contents/Developer'
+    steps:
+    - uses: actions/cache@v3
+      id: cache-old-class-dump
+      with:
+        path: old/build/Debug
+        key: ${{ runner.os }}-${{ runner.arch }}-${{ env.DEVELOPER_DIR }}-class-dump
+    - name: Install Homebrew dependencies
+      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
+      run: brew install openssl
+    - uses: actions/checkout@v3
+      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
+      with:
+        ref: '3.5'
+        path: old
+    - name: Build
+      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
+      run: |
+        xcodebuild build \
+          -project old/class-dump.xcodeproj \
+          -target class-dump \
+          -configuration Debug \
+          OTHER_CFLAGS='-I/usr/local/opt/openssl@3/include -Wno-unknown-warning-option' \
+          OTHER_LDFLAGS=-L/usr/local/opt/openssl@3/lib \
+          DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=1 \
+          ARCHS=x86_64 \
+          | xcpretty
+    - uses: actions/upload-artifact@v3
+      with:
+        name: old-class-dump
+        path: old/build/Debug/class-dump
   test:
     runs-on: ${{ matrix.macos }}
+    needs: build-old-class-dump
     strategy:
       fail-fast: false
       matrix:
@@ -23,10 +58,6 @@ jobs:
           xcode: '13.4.1'
     env:
       DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer"
-      OLD_CD: old/build/Debug/class-dump
-      NEW_CD: build/Debug/class-dump
-      ARCH_CD: build/Debug/class-dump
-      DIFF: diff -ru
     steps:
     - uses: actions/checkout@v3
     - name: Build all
@@ -35,25 +66,22 @@ jobs:
       run: xcodebuild build -project class-dump.xcodeproj -target UnitTests -configuration Debug | xcpretty
     - name: Run UnitTests
       run: xcrun xctest build/Debug/UnitTests.xctest
-    - uses: actions/cache@v3
-      id: cache-old-class-dump
+    - uses: actions/setup-python@v4
       with:
+        python-version: '2.7'
+    - uses: actions/download-artifact@v3
+      with:
+        name: old-class-dump
         path: old/build/Debug
-        key: ${{ runner.os }}-${{ runner.arch }}-${{ env.DEVELOPER_DIR }}-class-dump
-    - name: Install Homebrew dependencies
-      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
-      run: brew install openssl
-    - name: Checkout old class-dump
-      uses: actions/checkout@v3
-      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
-      with:
-        ref: '3.5'
-        path: old
-    - name: Build old class-dump
-      if: steps.cache-old-class-dump.outputs.cache-hit != 'true'
-      run: xcodebuild build -project old/class-dump.xcodeproj -target class-dump -configuration Debug OTHER_CFLAGS='-I/usr/local/opt/openssl@3/include -Wno-unknown-warning-option' OTHER_LDFLAGS=-L/usr/local/opt/openssl@3/lib DISABLE_MANUAL_TARGET_ORDER_BUILD_WARNING=1 ARCHS=x86_64 | xcpretty
+    - name: Restore file permissions
+      run: chmod +x old/build/Debug/class-dump
     - name: Run Tests
       run: python Tests/doTests.py
+      env:
+        OLD_CD: old/build/Debug/class-dump
+        NEW_CD: build/Debug/class-dump
+        ARCH_CD: build/Debug/class-dump
+        DIFF: diff -ru
   status-check:
     runs-on: ubuntu-20.04
     needs: test
