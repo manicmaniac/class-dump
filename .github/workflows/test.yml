@@ -61,11 +61,30 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build all
-      run: xcodebuild build -project class-dump.xcodeproj -target all -configuration Debug | xcpretty
+      run: |
+        xcodebuild build \
+          -project class-dump.xcodeproj \
+          -target all \
+          -configuration Debug \
+          | xcpretty
     - name: Build UnitTests
-      run: xcodebuild build -project class-dump.xcodeproj -target UnitTests -configuration Debug | xcpretty
+      run: |
+        xcodebuild build-for-testing \
+          -project class-dump.xcodeproj \
+          -scheme MachObjC \
+          -configuration Debug \
+          | xcpretty
     - name: Run UnitTests
-      run: xcrun xctest build/Debug/UnitTests.xctest
+      run: |
+        xcodebuild test-without-building \
+          -project class-dump.xcodeproj \
+          -scheme MachObjC \
+          -configuration Debug \
+          -resultBundlePath ./UnitTests.xcresult
+    - uses: actions/upload-artifact@v3
+      with:
+        name: UnitTests-xcode-${{ matrix.xcode }}.xcresult
+        path: UnitTests.xcresult/*
     - uses: actions/setup-python@v4
       with:
         python-version: '2.7'
