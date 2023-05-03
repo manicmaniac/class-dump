@@ -82,6 +82,7 @@ jobs:
           -configuration Debug \
           -resultBundlePath ./UnitTests.xcresult
     - uses: actions/upload-artifact@v3
+      if: failure()
       with:
         name: UnitTests-xcode-${{ matrix.xcode }}.xcresult
         path: UnitTests.xcresult/*
