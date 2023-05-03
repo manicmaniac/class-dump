@@ -73,6 +73,7 @@ jobs:
           -project class-dump.xcodeproj \
           -target all \
           -configuration Debug \
+          -arch x86_64 \
           | xcpretty
     - name: Build UnitTests
       run: |
@@ -80,6 +81,7 @@ jobs:
           -project class-dump.xcodeproj \
           -scheme MachObjC \
           -configuration Debug \
+          -arch x86_64 \
           | xcpretty
     - name: Run UnitTests
       run: |
