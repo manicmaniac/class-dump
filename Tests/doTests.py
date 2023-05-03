@@ -59,7 +59,7 @@ ARCH_CD = os.getenv('ARCH_CD', os.path.expanduser("/Local/nygard/Debug/class-dum
 DIFF = os.getenv("DIFF", "ksdiff")
 
 try:
-    developer_root = subprocess.check_output(shlex.split("xcode-select --print-path")).rstrip()
+    developer_root = subprocess.check_output(["xcode-select", "--print-path"], encoding='utf-8').rstrip()
 except:
     developer_root = None
 print("Developer root:", developer_root)
@@ -149,17 +149,17 @@ def main(argv):
 
     sdk_root = None
     if args.sdk:
-        sdk_root = subprocess.check_output(shlex.split("xcodebuild -version -sdk %s Path" % args.sdk))
+        sdk_root = subprocess.check_output(["xcodebuild", "-version", "-sdk", args.sdk, "Path"], encoding="utf-8")
     else:
         if args.ios:
-            sdk_root = subprocess.check_output(shlex.split("xcodebuild -version -sdk iphoneos Path"))
+            sdk_root = subprocess.check_output(["xcodebuild", "-version", "-sdk", "-iphoneos", "Path"], encoding="utf-8")
 
     #print "sdk_root:", sdk_root
 
     print("Starting tests at", datetime.today().ctime())
     print()
-    print("Old class-dump:", " ".join(Popen("ls -al " + OLD_CD, shell=True, stdout=PIPE).stdout.readlines()), end=' ')
-    print("New class-dump:", " ".join(Popen("ls -al " + NEW_CD, shell=True, stdout=PIPE).stdout.readlines()), end=' ')
+    print("Old class-dump:", " ".join(subprocess.check_output(["ls", "-al", OLD_CD], encoding="utf-8").splitlines()), end=' ')
+    print("New class-dump:", " ".join(subprocess.check_output(["ls", "-al", NEW_CD], encoding="utf-8").splitlines()), end=' ')
     print()
 
     if args.ios:
@@ -215,7 +215,7 @@ def main(argv):
         dirname = os.path.dirname(path)
         (base, ext) = os.path.splitext(os.path.basename(path))
         ext = ext.lstrip(".")
-        proc = Popen([ARCH_CD, "--list-arches", path], shell=False, stdout=PIPE)
+        proc = Popen([ARCH_CD, "--list-arches", path], shell=False, stdout=PIPE, encoding="utf-8")
         arches = proc.stdout.readline().rstrip().split(" ")
         print("%-10s %-20s %-40s %s" % (ext, arches, base, dirname))
         proc.stdout.readlines()
@@ -226,28 +226,28 @@ def main(argv):
                 command.extend(OLD_OPTS)
                 #print command
                 out = open("%s/%s-%s.txt" % (TESTDIR_OLD, base, ext), "w");
-                proc = Popen(command, shell=False, stdout=out, stderr=out)
+                proc = Popen(command, shell=False, stdout=out, stderr=out, encoding="utf-8")
                 arch_procs.append( (proc, out) )
 
                 command = [NEW_CD, "-s", "-t", path]
                 command.extend(NEW_OPTS)
                 #print command
                 out = open("%s/%s-%s.txt" % (TESTDIR_NEW, base, ext), "w");
-                proc = Popen(command, shell=False, stdout=out, stderr=out)
+                proc = Popen(command, shell=False, stdout=out, stderr=out, encoding="utf-8")
                 arch_procs.append( (proc, out) )
             else:
                 command = [OLD_CD, "-s", "-t", "--arch", arch, path]
                 command.extend(OLD_OPTS)
                 #print command
                 out = open("%s/%s-%s-%s.txt" % (TESTDIR_OLD, base, arch, ext), "w");
-                proc = Popen(command, shell=False, stdout=out, stderr=out)
+                proc = Popen(command, shell=False, stdout=out, stderr=out, encoding="utf-8")
                 arch_procs.append( (proc, out) )
 
                 command = [NEW_CD, "-s", "-t", "--arch", arch, path]
                 command.extend(NEW_OPTS)
                 #print command
                 out = open("%s/%s-%s-%s.txt" % (TESTDIR_NEW, base, arch, ext), "w");
-                proc = Popen(command, shell=False, stdout=out, stderr=out)
+                proc = Popen(command, shell=False, stdout=out, stderr=out, encoding="utf-8")
                 arch_procs.append( (proc, out) )
 
         for proc, out in arch_procs:
@@ -256,7 +256,7 @@ def main(argv):
             out.close
 
     print("Ended tests at", datetime.today().ctime())
-    Popen("%s %s %s" % (DIFF, TESTDIR_OLD, TESTDIR_NEW), shell=True)
+    Popen("%s %s %s" % (DIFF, TESTDIR_OLD, TESTDIR_NEW), shell=True, encoding="utf-8")
 
 #----------------------------------------------------------------------
 #
