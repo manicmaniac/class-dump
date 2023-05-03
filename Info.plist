@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
+	<string>en</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.stevenygard.class-dump</string>
 	<key>CFBundleInfoDictionaryVersion</key>
