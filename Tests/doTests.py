@@ -62,7 +62,7 @@ try:
     developer_root = subprocess.check_output(shlex.split("xcode-select --print-path")).rstrip()
 except:
     developer_root = None
-print "Developer root:", developer_root
+print("Developer root:", developer_root)
 
 def mac_frameworks(xcode_path=None):
     paths = [
@@ -116,17 +116,17 @@ def build_ios_paths(sdk_root):
     return dict(apps=iphone_apps, frameworks=iphone_frameworks, bundles=iphone_bundles)
 
 def print_path_dict(sdict):
-    print "Frameworks:"
+    print("Frameworks:")
     for path in sdict["frameworks"]:
-        print "    %s" % (path)
+        print("    %s" % (path))
 
-    print "Applications:"
+    print("Applications:")
     for path in sdict["apps"]:
-        print "    %s" % (path)
+        print("    %s" % (path))
 
-    print "Bundles:"
+    print("Bundles:")
     for path in sdict["bundles"]:
-        print "    %s" % (path)
+        print("    %s" % (path))
 
 def mkdir_ignore(dir):
     try:
@@ -140,7 +140,7 @@ def main(argv):
     parser.add_argument("--sdk", help="Specify an SDK to use to resolve frameworks")
     parser.add_argument("--ios", action="store_true", help="Test iOS targets")
     args = parser.parse_args()
-    print args
+    print(args)
 
     if args.show_sdks:
         subprocess.call(shlex.split("xcodebuild  -showsdks"))
@@ -156,30 +156,30 @@ def main(argv):
 
     #print "sdk_root:", sdk_root
 
-    print "Starting tests at", datetime.today().ctime()
-    print
-    print "Old class-dump:", " ".join(Popen("ls -al " + OLD_CD, shell=True, stdout=PIPE).stdout.readlines()),
-    print "New class-dump:", " ".join(Popen("ls -al " + NEW_CD, shell=True, stdout=PIPE).stdout.readlines()),
-    print
+    print("Starting tests at", datetime.today().ctime())
+    print()
+    print("Old class-dump:", " ".join(Popen("ls -al " + OLD_CD, shell=True, stdout=PIPE).stdout.readlines()), end=' ')
+    print("New class-dump:", " ".join(Popen("ls -al " + NEW_CD, shell=True, stdout=PIPE).stdout.readlines()), end=' ')
+    print()
 
     if args.ios:
-        print "Testing on iOS targets"
-        print
-        print "sdk_root:", sdk_root
+        print("Testing on iOS targets")
+        print()
+        print("sdk_root:", sdk_root)
         sdict = build_ios_paths(sdk_root)
         print_path_dict(sdict)
-        print
+        print()
         OLD_OPTS = []
         NEW_OPTS = ["--sdk-root", sdk_root]
     else:
-        print "Testing on Mac OS X targets"
-        print
-        print "sdk_root:", sdk_root
+        print("Testing on Mac OS X targets")
+        print()
+        print("sdk_root:", sdk_root)
         if sdk_root:
-            print "Ignoring --sdk-root for macosx testing"
+            print("Ignoring --sdk-root for macosx testing")
         sdict = dict(apps=mac_apps(), frameworks=mac_frameworks(), bundles=mac_bundles())
         print_path_dict(sdict)
-        print
+        print()
         OLD_OPTS = []
         NEW_OPTS = []
 
@@ -196,11 +196,11 @@ def main(argv):
 
     apps = [app for app in apps if not os.path.basename(app).startswith("Hopper")]
 
-    print "  Framework count:", len(frameworks)
-    print "Application count:", len(apps)
-    print "     Bundle count:", len(bundles)
-    print "            Total:", len(frameworks) + len(apps) + len(bundles)
-    print
+    print("  Framework count:", len(frameworks))
+    print("Application count:", len(apps))
+    print("     Bundle count:", len(bundles))
+    print("            Total:", len(frameworks) + len(apps) + len(bundles))
+    print()
 
     mkdir_ignore(TESTDIR)
     mkdir_ignore(TESTDIR_OLD)
@@ -217,7 +217,7 @@ def main(argv):
         ext = ext.lstrip(".")
         proc = Popen([ARCH_CD, "--list-arches", path], shell=False, stdout=PIPE)
         arches = proc.stdout.readline().rstrip().split(" ")
-        print "%-10s %-20s %-40s %s" % (ext, arches, base, dirname)
+        print("%-10s %-20s %-40s %s" % (ext, arches, base, dirname))
         proc.stdout.readlines()
         arch_procs = []
         for arch in arches:
@@ -255,7 +255,7 @@ def main(argv):
             proc.wait()
             out.close
 
-    print "Ended tests at", datetime.today().ctime()
+    print("Ended tests at", datetime.today().ctime())
     Popen("%s %s %s" % (DIFF, TESTDIR_OLD, TESTDIR_NEW), shell=True)
 
 #----------------------------------------------------------------------
