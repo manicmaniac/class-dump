@@ -1,0 +1,32 @@
+name: Release
+on:
+  push:
+    tags:
+    - '*.*.*'
+jobs:
+  release:
+    runs-on: macOS-13
+    defaults:
+      run:
+        shell: bash
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_14.3.app/Contents/Developer
+    steps:
+    - uses: actions/checkout@v3
+    - name: Validate version
+      run: test "$(sed -nE 's/^#define CLASS_DUMP_BASE_VERSION +\"([^ ]+).*\"$/\1/p' Source/CDClassDump.h)" = '${{ github.ref_name }}'
+    - name: Build
+      run: |
+        xcodebuild install \
+          -project class-dump.xcodeproj \
+          -scheme class-dump \
+          DSTROOT="${TMPDIR}/bin" \
+          | xcpretty
+    - name: Create release
+      run: gh release create '${{ github.ref_name }}' --generate-notes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload release assets
+      run: gh release upload '${{ github.ref_name }}' "${TMPDIR}/bin/class-dump"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
