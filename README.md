@@ -1,6 +1,8 @@
 class-dump
 ==========
 
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e3f73547f1dd27039f0f/test_coverage)](https://codeclimate.com/github/manicmaniac/class-dump/test_coverage)
+
 class-dump is a command-line utility for examining the Objective-C
 segment of Mach-O files.  It generates declarations for the classes,
 categories and protocols.  This is the same information provided by
