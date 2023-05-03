@@ -108,7 +108,7 @@ jobs:
         path: code-climate-xcode-${{ matrix.xcode }}.json
     - uses: actions/setup-python@v4
       with:
-        python-version: '2.7'
+        python-version: '3.11'
     - uses: actions/download-artifact@v3
       with:
         name: old-class-dump
