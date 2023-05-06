@@ -65,9 +65,6 @@
         return nil;
     CDOCProtocol *protocol = [self.protocolUniquer protocolWithAddress:address];
     if (protocol == nil) {
-        protocol = [[CDOCProtocol alloc] init];
-        [self.protocolUniquer setProtocol:protocol withAddress:address];
-        
         CDMachOFileDataCursor *cursor = [[CDMachOFileDataCursor alloc] initWithFile:self.machOFile address:address];
         if ([cursor offset] == -'S') {
             NSLog(@"Warning: Meet Swift object at %s",__cmd);
@@ -101,6 +98,7 @@
         //NSLog(@"%016lx %016lx %016lx %016lx", objc2Protocol.isa, objc2Protocol.name, objc2Protocol.protocols, objc2Protocol.instanceMethods);
         //NSLog(@"%016lx %016lx %016lx %016lx", objc2Protocol.classMethods, objc2Protocol.optionalInstanceMethods, objc2Protocol.optionalClassMethods, objc2Protocol.instanceProperties);
         
+        protocol = [[CDOCProtocol alloc] init];
         NSString *str = [self.machOFile stringAtAddress:objc2Protocol.name];
         [protocol setName:str];
         
@@ -133,7 +131,7 @@
         for (CDOCProperty *property in [self loadPropertiesAtAddress:objc2Protocol.instanceProperties])
             [protocol addProperty:property];
     }
-    
+    [self.protocolUniquer setProtocol:protocol withAddress:address];
     return protocol;
 }
 
