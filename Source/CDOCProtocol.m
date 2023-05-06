@@ -33,10 +33,10 @@
     NSMutableSet *_adoptedProtocolNames;
 }
 
-- (id)init;
+- (instancetype)initWithName:(NSString *)name;
 {
     if ((self = [super init])) {
-        _name = nil;
+        _name = [name copy];
         _protocols               = [[NSMutableArray alloc] init];
         _classMethods            = [[NSMutableArray alloc] init];
         _instanceMethods         = [[NSMutableArray alloc] init];
