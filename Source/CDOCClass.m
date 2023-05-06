@@ -22,9 +22,9 @@
     BOOL _isExported;
 }
 
-- (id)init;
+- (instancetype)initWithName:(NSString *)name;
 {
-    if ((self = [super init])) {
+    if ((self = [super initWithName:name])) {
         _isExported = YES;
     }
 

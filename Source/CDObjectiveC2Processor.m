@@ -98,10 +98,9 @@
         //NSLog(@"%016lx %016lx %016lx %016lx", objc2Protocol.isa, objc2Protocol.name, objc2Protocol.protocols, objc2Protocol.instanceMethods);
         //NSLog(@"%016lx %016lx %016lx %016lx", objc2Protocol.classMethods, objc2Protocol.optionalInstanceMethods, objc2Protocol.optionalClassMethods, objc2Protocol.instanceProperties);
         
-        protocol = [[CDOCProtocol alloc] init];
         NSString *str = [self.machOFile stringAtAddress:objc2Protocol.name];
-        [protocol setName:str];
-        
+        protocol = [[CDOCProtocol alloc] initWithName:str];
+
         if (objc2Protocol.protocols != 0) {
             [cursor setAddress:objc2Protocol.protocols];
             uint64_t count = [cursor readPtr];
@@ -156,10 +155,9 @@
     //NSLog(@"%016lx %016lx %016lx %016lx", objc2Category.name, objc2Category.class, objc2Category.instanceMethods, objc2Category.classMethods);
     //NSLog(@"%016lx %016lx %016lx %016lx", objc2Category.protocols, objc2Category.instanceProperties, objc2Category.v7, objc2Category.v8);
     
-    CDOCCategory *category = [[CDOCCategory alloc] init];
     NSString *str = [self.machOFile stringAtAddress:objc2Category.name];
-    [category setName:str];
-    
+    CDOCCategory *category = [[CDOCCategory alloc] initWithName:str];
+
     for (CDOCMethod *method in [self loadMethodsAtAddress:objc2Category.instanceMethods])
         [category addInstanceMethod:method];
     
@@ -256,8 +254,7 @@
     NSString *str = [self.machOFile stringAtAddress:objc2ClassData.name];
     //NSLog(@"name = %@", str);
     
-    CDOCClass *aClass = [[CDOCClass alloc] init];
-    [aClass setName:str];
+    CDOCClass *aClass = [[CDOCClass alloc] initWithName:str];
     
     for (CDOCMethod *method in [self loadMethodsAtAddress:objc2ClassData.baseMethods])
         [aClass addInstanceMethod:method];

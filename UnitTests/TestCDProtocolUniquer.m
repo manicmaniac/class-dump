@@ -23,8 +23,7 @@
 
 - (void)test_createUniquedProtocols_withProtocol {
     CDProtocolUniquer *uniquer = [[CDProtocolUniquer alloc] init];
-    CDOCProtocol *protocol = [[CDOCProtocol alloc] init];
-    protocol.name = @"Foo";
+    CDOCProtocol *protocol = [[CDOCProtocol alloc] initWithName:@"Foo"];
     [uniquer setProtocol:protocol withAddress:0x8];
     [uniquer createUniquedProtocols];
     XCTAssertEqual(uniquer.uniqueProtocolsSortedByName.count, 1);

@@ -9,7 +9,10 @@
 
 @interface CDOCProtocol : NSObject
 
-@property (strong) NSString *name;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithName:(NSString *)name;
+
+@property (readonly) NSString *name;
 
 @property (readonly) NSArray *protocols;
 - (void)addProtocol:(CDOCProtocol *)protocol;
