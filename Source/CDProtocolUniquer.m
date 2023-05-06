@@ -51,6 +51,7 @@
     
     for (NSNumber *key in [[_protocolsByAddress allKeys] sortedArrayUsingSelector:@selector(compare:)]) {
         CDOCProtocol *p1 = _protocolsByAddress[key];
+        NSAssert(p1.name != nil, @"[CDOCProtocol name] should not be nil at this point.");
         CDOCProtocol *uniqueProtocol = _uniqueProtocolsByName[p1.name];
         if (uniqueProtocol == nil) {
             uniqueProtocol = [[CDOCProtocol alloc] init];
